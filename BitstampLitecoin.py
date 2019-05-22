@@ -4,14 +4,13 @@ import sys
 import time
 import psycopg2
 import json
-from datetime import datetime
 
 root = logging.getLogger()
 root.setLevel(logging.INFO)
 ch = logging.StreamHandler(sys.stdout)
 root.addHandler(ch)
 
-conn = psycopg2.connect(database="postgres", user = "postgres", password = "Roflmao24!", host = "127.0.0.1", port = "5432")
+conn = psycopg2.connect(database="postgres", user = "postgres", password = "", host = "127.0.0.1", port = "5432")
 cur = conn.cursor()
 
 cur.execute('''CREATE TABLE TRADES

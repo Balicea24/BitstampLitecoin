@@ -10,25 +10,25 @@ root.setLevel(logging.INFO)
 ch = logging.StreamHandler(sys.stdout)
 root.addHandler(ch)
 
-conn = psycopg2.connect(database="postgres", user = "postgres", password = "", host = "127.0.0.1", port = "5432")
+conn = psycopg2.connect(database="postgres", user = "postgres", password = "Roflmao24!", host = "127.0.0.1", port = "5432")
 cur = conn.cursor()
 
 cur.execute('''CREATE TABLE TRADES
-      (ID           SERIAL PRIMARY KEY,
-      UNIXTIMESTAMP            INT     NOT NULL,
-      PRICE        FLOAT(8),
-      AMOUNT         FLOAT(8),
-      TYPE          INT     NOT NULL,
-      BUY_ID            BIGINT NOT NULL,
-      SELL_ID            BIGINT NOT NULL);''')
+      (ID SERIAL PRIMARY KEY,
+      UNIXTIMESTAMP INT NOT NULL,
+      PRICE FLOAT(8) NOT NULL,
+      AMOUNT FLOAT(8) NOT NULL,
+      SELL_ORDER SMALLINT NOT NULL,
+      BUY_ID BIGINT NOT NULL,
+      SELL_ID BIGINT NOT NULL);''')
 
 cur.execute('''CREATE TABLE ORDERS
-     (ID               SERIAL PRIMARY KEY,
-      ORDER_ID            BIGINT     NOT NULL,
-      UNIXTIMESTAMP            INT     NOT NULL,
-      PRICE        FLOAT(8),
-      AMOUNT         FLOAT(8),
-      TYPE          INT     NOT NULL);''')
+     (ID SERIAL PRIMARY KEY,
+      UNIXTIMESTAMP INT NOT NULL,
+      PRICE FLOAT(8) NOT NULL,
+      AMOUNT FLOAT(8) NOT NULL,
+      SELL_ORDER SMALLINT NOT NULL,
+      ORDER_ID BIGINT NOT NULL);''')
 
 conn.commit()
 
@@ -51,12 +51,12 @@ class Trades:
         unixtimestamp = int(data["datetime"])
         price = data['price_str']
         amount = data['amount']
-        type = data['type']
+        sel_order = data['type']
         buy_id = data['buy_order_id']
         sell_id = data['sell_order_id']
 
-        cur.execute("INSERT INTO TRADES (UNIXTIMESTAMP,PRICE,AMOUNT,TYPE, BUY_ID, SELL_ID) \
-              VALUES (%s, %s, %s, %s, %s, %s)", (unixtimestamp, price, amount, type, buy_id, sell_id));
+        cur.execute("INSERT INTO TRADES (UNIXTIMESTAMP,PRICE,AMOUNT,SELL_ORDER,BUY_ID,SELL_ID) \
+              VALUES (%s, %s, %s, %s, %s, %s)", (unixtimestamp, price, amount, sel_order, buy_id, sell_id));
 
         conn.commit()
 
@@ -70,11 +70,11 @@ class Orders(Trades):
         unixtimestamp = int(data["datetime"])
         price = data["price"]
         amount = data["amount"]
-        type = data["order_type"]
+        sel_order = data["order_type"]
         order_id = data['id']
 
-        cur.execute("INSERT INTO ORDERS (ORDER_ID,UNIXTIMESTAMP,PRICE,AMOUNT,TYPE) \
-              VALUES (%s, %s, %s, %s, %s)", (order_id, unixtimestamp, price, amount, type));
+        cur.execute("INSERT INTO ORDERS (ORDER_ID,UNIXTIMESTAMP,PRICE,AMOUNT,SELL_ORDER) \
+              VALUES (%s, %s, %s, %s, %s)", (order_id, unixtimestamp, price, amount, sel_order));
 
         conn.commit()
 

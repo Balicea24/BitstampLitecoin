@@ -34,6 +34,7 @@ conn.commit()
 
 class Trades:
     pusher = pysher.Pusher("de504dc5763aeef9ff52", daemon = False)
+
     def __init__(self):
         self.pusher.connection.bind('pusher:connection_established', self.listen)
         self.pusher.connect()
@@ -48,7 +49,7 @@ class Trades:
         self.push_to_DB(data)
 
     def push_to_DB(self, data):
-        unixtimestamp = int(data["datetime"])
+        unixtimestamp = int(data["timestamp"])
         price = data['price_str']
         amount = data['amount']
         sel_order = data['type']
@@ -62,6 +63,7 @@ class Trades:
 
 class Orders(Trades):
     pusher = pysher.Pusher("de504dc5763aeef9ff52", daemon = False)
+
     def listen(self, data):
         channel = self.pusher.subscribe('live_orders_ltcusd')
         channel.bind('order_created', self.get)
